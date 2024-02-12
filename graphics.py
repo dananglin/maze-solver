@@ -42,6 +42,13 @@ class Window:
         self.__root.title("Maze Solver")
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
 
+        # Position the window to the centre of the screen
+        screen_width = self.__root.winfo_screenwidth()
+        screen_height = self.__root.winfo_screenheight()
+        centre_x = int(screen_width/2 - width/2)
+        centre_y = int(screen_height/2 - height/2)
+        self.__root.geometry(f"{width}x{height}+{centre_x}+{centre_y}")
+
         self.__canvas = Canvas(self.__root)
         self.__canvas.config(
             bg="white",
