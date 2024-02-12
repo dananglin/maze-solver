@@ -1,5 +1,6 @@
 from tkinter import Tk, BOTH, Canvas
 
+
 class Point:
     """
     Point represents the position of a point.
@@ -37,19 +38,19 @@ class Window:
     """
 
     def __init__(self, width: int, height: int):
-        self.width = width
-        self.height = height
-
         self.__root = Tk()
         self.__root.title("Maze Solver")
-        self.__root.geometry(f"{self.width}x{self.height}")
-
-        self.canvas = Canvas()
-        self.canvas.pack()
-
-        self.is_running = False
-
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
+
+        self.__canvas = Canvas(self.__root)
+        self.__canvas.config(
+            bg="white",
+            height=height,
+            width=width,
+        )
+        self.__canvas.pack()
+
+        self.__is_running = False
 
     def redraw(self):
         """
@@ -63,18 +64,18 @@ class Window:
         wait_for_close continuously redraws the window until
         it is set to close.
         """
-        self.is_running = True
-        while self.is_running:
+        self.__is_running = True
+        while self.__is_running:
             self.redraw()
 
     def draw_line(self, line: Line, fill_colour: str):
         """
         draw_line draws a line on the canvas.
         """
-        line.draw(self.canvas, fill_colour)
+        line.draw(self.__canvas, fill_colour)
 
     def close(self):
         """
         close sets the window to close.
         """
-        self.is_running = False
+        self.__is_running = False
