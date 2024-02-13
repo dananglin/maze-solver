@@ -10,7 +10,7 @@ class Cell:
             self,
             x1: int, y1: int,
             x2: int, y2: int,
-            window: Window
+            window: Window = None,
     ) -> None:
         # Define the cell walls
         top_wall = Line(Point(x1, y1), Point(x2, y1))
@@ -18,18 +18,18 @@ class Cell:
         left_wall = Line(Point(x1, y1), Point(x1, y2))
         right_wall = Line(Point(x2, y1), Point(x2, y2))
 
-        self.__top_wall = CellWall(top_wall)
-        self.__bottom_wall = CellWall(bottom_wall)
-        self.__left_wall = CellWall(left_wall)
-        self.__right_wall = CellWall(right_wall)
+        self._top_wall = CellWall(top_wall)
+        self._bottom_wall = CellWall(bottom_wall)
+        self._left_wall = CellWall(left_wall)
+        self._right_wall = CellWall(right_wall)
 
         # Calculate the cell's central point
         centre_x = x1 + ((x2 - x1) / 2)
         centre_y = y1 + ((y2 - y1) / 2)
-        self.__centre = Point(centre_x, centre_y)
+        self._centre = Point(centre_x, centre_y)
 
         # A reference to the root Window class for drawing purposes.
-        self.__window = window
+        self._window = window
 
     def configure_walls(
             self,
@@ -41,40 +41,42 @@ class Cell:
         """
         configure_walls configures the existence of the Cell's walls.
         """
-        self.__top_wall.exists = top
-        self.__bottom_wall.exists = bottom
-        self.__left_wall.exists = left
-        self.__right_wall.exists = right
+        self._top_wall.exists = top
+        self._bottom_wall.exists = bottom
+        self._left_wall.exists = left
+        self._right_wall.exists = right
 
     def centre(self) -> Point:
         """
         centre returns the Cell's central point
         """
-        return self.__centre
+        return self._centre
 
     def draw(self) -> None:
         """
         draw draws the cell onto the canvas
         """
-        if self.__top_wall.exists:
-            self.__window.draw_line(self.__top_wall.line)
-        if self.__bottom_wall.exists:
-            self.__window.draw_line(self.__bottom_wall.line)
-        if self.__left_wall.exists:
-            self.__window.draw_line(self.__left_wall.line)
-        if self.__right_wall.exists:
-            self.__window.draw_line(self.__right_wall.line)
+        if self._window:
+            if self._top_wall.exists:
+                self._window.draw_line(self._top_wall.line)
+            if self._bottom_wall.exists:
+                self._window.draw_line(self._bottom_wall.line)
+            if self._left_wall.exists:
+                self._window.draw_line(self._left_wall.line)
+            if self._right_wall.exists:
+                self._window.draw_line(self._right_wall.line)
 
     def draw_move(self, to_cell: 'Cell', undo: bool = False) -> None:
         """
         draw_move draws a path between the centre of this cell and
         the centre of the given cell.
         """
-        fill_colour = "red"
-        if undo:
-            fill_colour = "grey"
-        line = Line(self.centre(), to_cell.centre())
-        self.__window.draw_line(line, fill_colour)
+        if self._window:
+            fill_colour = "red"
+            if undo:
+                fill_colour = "grey"
+            line = Line(self.centre(), to_cell.centre())
+            self._window.draw_line(line, fill_colour)
 
 
 class CellWall:

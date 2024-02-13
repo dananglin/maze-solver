@@ -38,51 +38,51 @@ class Window:
     """
 
     def __init__(self, width: int, height: int) -> None:
-        self.__root = Tk()
-        self.__root.title("Maze Solver")
-        self.__root.protocol("WM_DELETE_WINDOW", self.close)
+        self._root = Tk()
+        self._root.title("Maze Solver")
+        self._root.protocol("WM_DELETE_WINDOW", self.close)
 
         # Position the window to the centre of the screen
-        screen_width = self.__root.winfo_screenwidth()
-        screen_height = self.__root.winfo_screenheight()
+        screen_width = self._root.winfo_screenwidth()
+        screen_height = self._root.winfo_screenheight()
         centre_x = int(screen_width/2 - width/2)
         centre_y = int(screen_height/2 - height/2)
-        self.__root.geometry(f"{width}x{height}+{centre_x}+{centre_y}")
+        self._root.geometry(f"{width}x{height}+{centre_x}+{centre_y}")
 
-        self.__canvas = Canvas(self.__root)
-        self.__canvas.config(
+        self._canvas = Canvas(self._root)
+        self._canvas.config(
             bg="white",
             height=height,
             width=width,
         )
-        self.__canvas.pack()
+        self._canvas.pack()
 
-        self.__is_running = False
+        self._running = False
 
     def redraw(self) -> None:
         """
         redraw redraws all the graphics in the window.
         """
-        self.__root.update_idletasks()
-        self.__root.update()
+        self._root.update_idletasks()
+        self._root.update()
 
     def wait_for_close(self) -> None:
         """
         wait_for_close continuously redraws the window until
         it is set to close.
         """
-        self.__is_running = True
-        while self.__is_running:
+        self._running = True
+        while self._running:
             self.redraw()
 
     def draw_line(self, line: Line, fill_colour: str = "black") -> None:
         """
         draw_line draws a line on the canvas.
         """
-        line.draw(self.__canvas, fill_colour)
+        line.draw(self._canvas, fill_colour)
 
     def close(self) -> None:
         """
         close sets the window to close.
         """
-        self.__is_running = False
+        self._running = False
