@@ -12,28 +12,47 @@ class Cell:
             x2: int, y2: int,
             window: Window
     ):
-        self.__top_wall_exists = True
-        self.__bottom_wall_exists = True
-        self.__left_wall_exists = True
-        self.__right_wall_exists = True
-        self.__top_wall = Line(Point(x1, y1), Point(x2, y1))
-        self.__bottom_wall = Line(Point(x1, y2), Point(x2, y2))
-        self.__left_wall = Line(Point(x1, y1), Point(x1, y2))
-        self.__right_wall = Line(Point(x2, y1), Point(x2, y2))
+        self.__top_wall = CellWall(Line(Point(x1, y1), Point(x2, y1)))
+        self.__bottom_wall = CellWall(Line(Point(x1, y2), Point(x2, y2)))
+        self.__left_wall = CellWall(Line(Point(x1, y1), Point(x1, y2)))
+        self.__right_wall = CellWall(Line(Point(x2, y1), Point(x2, y2)))
         self.__window = window
 
-    def set_walls(self, top: bool, bottom: bool, left: bool, right: bool):
-        self.__top_wall_exists = top
-        self.__bottom_wall_exists = bottom
-        self.__left_wall_exists = left
-        self.__right_wall_exists = right
+    def configure_walls(
+            self,
+            top: bool = True,
+            bottom: bool = True,
+            left: bool = True,
+            right: bool = True,
+    ):
+        """
+        configure_walls configures the existence of the Cell's walls.
+        """
+        self.__top_wall.exists = top
+        self.__bottom_wall.exists = bottom
+        self.__left_wall.exists = left
+        self.__right_wall.exists = right
 
     def draw(self):
-        if self.__top_wall_exists:
-            self.__window.draw_line(self.__top_wall)
-        if self.__bottom_wall_exists:
-            self.__window.draw_line(self.__bottom_wall)
-        if self.__left_wall_exists:
-            self.__window.draw_line(self.__left_wall)
-        if self.__right_wall_exists:
-            self.__window.draw_line(self.__right_wall)
+        """
+        draw draws the cell onto the canvas
+        """
+        if self.__top_wall.exists:
+            self.__window.draw_line(self.__top_wall.line)
+        if self.__bottom_wall.exists:
+            self.__window.draw_line(self.__bottom_wall.line)
+        if self.__left_wall.exists:
+            self.__window.draw_line(self.__left_wall.line)
+        if self.__right_wall.exists:
+            self.__window.draw_line(self.__right_wall.line)
+
+
+class CellWall:
+    """
+    A CellWall represents the existence (or non-existence) of
+    a Cell's wall.
+    """
+
+    def __init__(self, line: Line):
+        self.exists = True
+        self.line = line
