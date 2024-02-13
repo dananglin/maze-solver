@@ -49,9 +49,13 @@ class Window:
         centre_y = int(screen_height/2 - height/2)
         self._root.geometry(f"{width}x{height}+{centre_x}+{centre_y}")
 
+        # Styling
+        self.background_colour = "white"
+        self.cell_grid_colour = "black"
+
         self._canvas = Canvas(self._root)
         self._canvas.config(
-            bg="white",
+            bg=self.background_colour,
             height=height,
             width=width,
         )

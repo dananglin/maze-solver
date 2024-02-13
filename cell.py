@@ -1,6 +1,17 @@
 from graphics import Window, Point, Line
 
 
+class CellWall:
+    """
+    A CellWall represents the existence (or non-existence) of
+    a Cell's wall.
+    """
+
+    def __init__(self, line: Line) -> None:
+        self.exists = True
+        self.line = line
+
+
 class Cell:
     """
     A Cell represents a grid on the maze.
@@ -56,35 +67,39 @@ class Cell:
         """
         draw draws the cell onto the canvas
         """
-        if self._window:
-            if self._top_wall.exists:
-                self._window.draw_line(self._top_wall.line)
-            if self._bottom_wall.exists:
-                self._window.draw_line(self._bottom_wall.line)
-            if self._left_wall.exists:
-                self._window.draw_line(self._left_wall.line)
-            if self._right_wall.exists:
-                self._window.draw_line(self._right_wall.line)
+        if not self._window:
+            return
+
+        if self._top_wall.exists:
+            self._window.draw_line(self._top_wall.line, fill_colour=self._window.cell_grid_colour)
+        else:
+            self._window.draw_line(self._top_wall.line, fill_colour=self._window.background_colour)
+
+        if self._bottom_wall.exists:
+            self._window.draw_line(self._bottom_wall.line, fill_colour=self._window.cell_grid_colour)
+        else:
+            self._window.draw_line(self._bottom_wall.line, fill_colour=self._window.background_colour)
+
+        if self._left_wall.exists:
+            self._window.draw_line(self._left_wall.line, fill_colour=self._window.cell_grid_colour)
+        else:
+            self._window.draw_line(self._left_wall.line, fill_colour=self._window.background_colour)
+
+        if self._right_wall.exists:
+            self._window.draw_line(self._right_wall.line, fill_colour=self._window.cell_grid_colour)
+        else:
+            self._window.draw_line(self._right_wall.line, fill_colour=self._window.background_colour)
 
     def draw_move(self, to_cell: 'Cell', undo: bool = False) -> None:
         """
         draw_move draws a path between the centre of this cell and
         the centre of the given cell.
         """
-        if self._window:
-            fill_colour = "red"
-            if undo:
-                fill_colour = "grey"
-            line = Line(self.centre(), to_cell.centre())
-            self._window.draw_line(line, fill_colour)
+        if not self._window:
+            return
 
-
-class CellWall:
-    """
-    A CellWall represents the existence (or non-existence) of
-    a Cell's wall.
-    """
-
-    def __init__(self, line: Line) -> None:
-        self.exists = True
-        self.line = line
+        fill_colour = "red"
+        if undo:
+            fill_colour = "grey"
+        line = Line(self.centre(), to_cell.centre())
+        self._window.draw_line(line, fill_colour)
