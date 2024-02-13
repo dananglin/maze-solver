@@ -55,7 +55,6 @@ class Tests(unittest.TestCase):
             2,
             2,
         )
-        print(f"entrance: {maze._cells[0][0]._top_wall}")
         self.assertFalse(maze._cells[0][0]._top_wall.exists)
         self.assertFalse(
             maze._cells[number_of_cell_rows - 1][number_of_cells_per_row - 1]._bottom_wall.exists)

@@ -23,6 +23,16 @@ class Cell:
             x2: int, y2: int,
             window: Window = None,
     ) -> None:
+        # Validation
+        if (x2 < x1) or (y2 < y1):
+            raise CellInvalidError(x1, y1, x2, y2)
+
+        if (x2 - x1) < 2:
+            raise CellTooSmallError("horizontal", x2-x1)
+
+        if (y2 - y1) < 2:
+            raise CellTooSmallError("vertical", y2-y1)
+
         # Define the cell walls
         top_wall = Line(Point(x1, y1), Point(x2, y1))
         bottom_wall = Line(Point(x1, y2), Point(x2, y2))
@@ -103,3 +113,38 @@ class Cell:
             fill_colour = "grey"
         line = Line(self.centre(), to_cell.centre())
         self._window.draw_line(line, fill_colour)
+
+
+class CellInvalidError(Exception):
+    """
+    CellInvalidError is returned when the program tries to create a Cell whose
+    values are invalid. The values are invalid when x2 is smaller than x1
+    and/or y2 is smaller than y1. When creating a Cell the x and y values
+    should always represent the top left and the bottom right of the cell's
+    walls (i.e. x1 < x2 and y1 < y2).
+    """
+
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, *args):
+        super().__init__(args)
+        self.x1 = x1
+        self.x2 = x2
+        self.y1 = y1
+        self.y2 = y2
+
+    def __str__(self):
+        return f"Invalid Cell values received. Please ensure that both: x1 ({self.x1}) < x2 ({self.x2}), and y1 ({self.y1}) < y2 ({self.y2})"
+
+
+class CellTooSmallError(Exception):
+    """
+    CellTooSmallError is returned when the program tries to create a Cell
+    which is too small to correctly draw it's central point.
+    """
+
+    def __init__(self, size_type: str, size: int, *args):
+        super().__init__(args)
+        self.size_type = size_type
+        self.size = size
+
+    def __str__(self):
+        return f"The {self.size_type} size of the cell ({self.size}) is too small."
