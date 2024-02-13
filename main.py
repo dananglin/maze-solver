@@ -5,19 +5,20 @@ from cell import Cell
 def main():
     window = Window(800, 800)
 
-    # Draw all walls
     cell_1 = Cell(10, 30, 100, 100, window)
+    cell_1.configure_walls(top=True, bottom=True, left=True, right=False)
     cell_1.draw()
 
-    # Draw vertical walls only
-    cell_2 = Cell(300, 50, 400, 100, window)
-    cell_2.configure_walls(top=False, bottom=False, left=True, right=True)
+    cell_2 = Cell(210, 30, 300, 100, window)
+    cell_2.configure_walls(top=True, bottom=False, left=False, right=True)
     cell_2.draw()
 
-    # Draw horizontal walls only
-    cell_3 = Cell(200, 400, 500, 600, window)
-    cell_3.configure_walls(top=True, bottom=True, left=False, right=False)
+    cell_3 = Cell(210, 130, 300, 200, window)
+    cell_3.configure_walls(top=False, bottom=True, left=True, right=True)
     cell_3.draw()
+
+    cell_1.draw_move(cell_2)
+    cell_2.draw_move(cell_3, undo=True)
 
     window.wait_for_close()
 
