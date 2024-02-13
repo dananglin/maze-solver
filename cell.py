@@ -11,7 +11,7 @@ class Cell:
             x1: int, y1: int,
             x2: int, y2: int,
             window: Window
-    ):
+    ) -> None:
         # Define the cell walls
         top_wall = Line(Point(x1, y1), Point(x2, y1))
         bottom_wall = Line(Point(x1, y2), Point(x2, y2))
@@ -37,7 +37,7 @@ class Cell:
             bottom: bool = True,
             left: bool = True,
             right: bool = True,
-    ):
+    ) -> None:
         """
         configure_walls configures the existence of the Cell's walls.
         """
@@ -52,7 +52,7 @@ class Cell:
         """
         return self.__centre
 
-    def draw(self):
+    def draw(self) -> None:
         """
         draw draws the cell onto the canvas
         """
@@ -65,7 +65,7 @@ class Cell:
         if self.__right_wall.exists:
             self.__window.draw_line(self.__right_wall.line)
 
-    def draw_move(self, to_cell: 'Cell', undo: bool = False):
+    def draw_move(self, to_cell: 'Cell', undo: bool = False) -> None:
         """
         draw_move draws a path between the centre of this cell and
         the centre of the given cell.
@@ -83,6 +83,6 @@ class CellWall:
     a Cell's wall.
     """
 
-    def __init__(self, line: Line):
+    def __init__(self, line: Line) -> None:
         self.exists = True
         self.line = line

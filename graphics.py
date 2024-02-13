@@ -16,11 +16,11 @@ class Line:
     Line represents a graphical line.
     """
 
-    def __init__(self, point_a: Point, point_b: Point):
+    def __init__(self, point_a: Point, point_b: Point) -> None:
         self.point_a = point_a
         self.point_b = point_b
 
-    def draw(self, canvas: Canvas, fill_colour: str):
+    def draw(self, canvas: Canvas, fill_colour: str) -> None:
         """
         draw draws a line on a given canvas.
         """
@@ -37,7 +37,7 @@ class Window:
     Window is a Graphical window.
     """
 
-    def __init__(self, width: int, height: int):
+    def __init__(self, width: int, height: int) -> None:
         self.__root = Tk()
         self.__root.title("Maze Solver")
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
@@ -59,14 +59,14 @@ class Window:
 
         self.__is_running = False
 
-    def redraw(self):
+    def redraw(self) -> None:
         """
         redraw redraws all the graphics in the window.
         """
         self.__root.update_idletasks()
         self.__root.update()
 
-    def wait_for_close(self):
+    def wait_for_close(self) -> None:
         """
         wait_for_close continuously redraws the window until
         it is set to close.
@@ -75,13 +75,13 @@ class Window:
         while self.__is_running:
             self.redraw()
 
-    def draw_line(self, line: Line, fill_colour: str = "black"):
+    def draw_line(self, line: Line, fill_colour: str = "black") -> None:
         """
         draw_line draws a line on the canvas.
         """
         line.draw(self.__canvas, fill_colour)
 
-    def close(self):
+    def close(self) -> None:
         """
         close sets the window to close.
         """
