@@ -1,0 +1,22 @@
+---
+name: test
+
+on:
+  pull_request:
+    types:
+    - opened
+    - reopened
+    - synchronize
+
+jobs:
+  test:
+    runs-on: docker
+    steps:
+    - name: Checkout Repository
+      uses: https://code.forgejo.org/actions/checkout@v3
+    - name: Install Python 3
+      uses: https://github.com/actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Test Code
+      run: python tests.py

@@ -29,7 +29,7 @@ class Line:
             self.point_b.x, self.point_b.y,
             fill=fill_colour, width=2
         )
-        canvas.pack()
+        canvas.pack(fill=BOTH, expand=1)
 
 
 class Window:
