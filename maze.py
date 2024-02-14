@@ -36,7 +36,8 @@ class Maze:
         self._cells: List[List[Cell]] = [None for i in range(self._num_cell_rows)]
         self._create_cells()
         self._open_entrance_and_exit()
-        self._break_walls_r(0, 0)
+        if self._window:
+            self._break_walls_r(0, 0)
 
     def _create_cells(self) -> None:
         """
