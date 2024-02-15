@@ -103,7 +103,7 @@ class Maze:
         """
 
         current_cell = self._cells[y][x]
-        current_cell.visited = True
+        current_cell.visited_by_maze_generator = True
         above, below, left, right = "above", "below", "left", "right"
 
         while True:
@@ -118,7 +118,7 @@ class Maze:
             for k, value in adjacent_cells.items():
                 if (value[0] < 0) or (value[1] < 0) or (value[0] > self._num_cell_rows-1) or (value[1] > self._num_cells_per_row-1):
                     continue
-                if self._cells[value[0]][value[1]].visited:
+                if self._cells[value[0]][value[1]].visited_by_maze_generator:
                     continue
 
                 to_visit.append(k)

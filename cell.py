@@ -76,7 +76,8 @@ class Cell:
         # A reference to the root Window class for drawing purposes.
         self._window = window
 
-        self.visited = False
+        self.visited_by_maze_generator = False
+        self.visited_by_maze_solver = False
 
     def configure_walls(
             self,
