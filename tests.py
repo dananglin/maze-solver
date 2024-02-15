@@ -1,5 +1,5 @@
 import unittest
-from cell import Cell, CellWallLabel
+from cell import Cell, CellWallLabels
 import maze
 import errors
 
@@ -65,10 +65,10 @@ class Tests(unittest.TestCase):
             None,
             None,
         )
-        self.assertFalse(m._cells[0][0].wall_exists(CellWallLabel.TOP))
+        self.assertFalse(m._cells[0][0].wall_exists(CellWallLabels.TOP))
         self.assertFalse(
             m._cells[number_of_cell_rows - 1]
-            [number_of_cells_per_row - 1].wall_exists(CellWallLabel.BOTTOM)
+            [number_of_cells_per_row - 1].wall_exists(CellWallLabels.BOTTOM)
         )
 
     def test_invalid_cell_exception(self):

@@ -5,7 +5,7 @@ from maze import Maze
 def main():
     window = Window(800, 800)
 
-    _ = Maze(
+    game = Maze(
         x_position=10,
         y_position=10,
         num_cell_rows=30,
@@ -14,6 +14,12 @@ def main():
         cell_size_y=20,
         window=window
     )
+
+    solved = game.solve()
+    if solved:
+        print("Maze solved successfully :)")
+    else:
+        print("I'm unable to solve the maze :(")
 
     window.mainloop()
 

@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Dict
 from time import sleep
 import random
 from enum import Enum
 from graphics import Window
-from cell import Cell
+from cell import Cell, CellWallLabels
 
 
 class MazeDirections(Enum):
@@ -39,7 +39,7 @@ class MazePosition:
     ) -> 'MazePosition':
         if direction not in MazeDirections:
             raise TypeError(
-                "The argument does not appear to be a valid MazeDirection"
+                "The argument does not appear to be a valid maze direction."
             )
 
         if direction is MazeDirections.ABOVE and (self.i-1 >= 0):
@@ -105,6 +105,8 @@ class Maze:
         self._cells: List[List[Cell]] = [
             None for i in range(self._num_cell_rows)]
         self._create_cell_grid()
+
+        # Open up the maze's entrance and exit.
         self._open_entrance_and_exit()
 
         start_position = MazePosition(
@@ -114,13 +116,7 @@ class Maze:
             max_j=self._num_cells_per_row-1,
         )
 
-        end_position = MazePosition(
-            i=self._num_cell_rows-1,
-            j=self._num_cells_per_row-1,
-            max_i=self._num_cell_rows-1,
-            max_j=self._num_cells_per_row-1,
-        )
-
+        # Generate the maze.
         self._break_walls_r(start_position)
 
     def _create_cell_grid(self) -> None:
@@ -227,10 +223,68 @@ class Maze:
 
             self._break_walls_r(next_position)
 
+    def solve(self) -> bool:
+        """
+        solve attempts to solve the generated maze.
+        """
+        start_position = MazePosition(
+            i=0,
+            j=0,
+            max_i=self._num_cell_rows-1,
+            max_j=self._num_cells_per_row-1,
+        )
+
+        end_position = MazePosition(
+            i=self._num_cell_rows-1,
+            j=self._num_cells_per_row-1,
+            max_i=self._num_cell_rows-1,
+            max_j=self._num_cells_per_row-1,
+        )
+
+        return self._solve_r(start_position, end_position)
+
+    def _solve_r(
+            self,
+            current_position: MazePosition,
+            end_position: MazePosition,
+    ) -> bool:
+        if current_position == end_position:
+            return True
+        current_cell = self._cells[current_position.i][current_position.j]
+        current_cell.visited_by_maze_solver = True
+
+        wall_map: Dict[MazeDirections, CellWallLabels] = {
+            MazeDirections.ABOVE: CellWallLabels.BOTTOM,
+            MazeDirections.BELOW: CellWallLabels.TOP,
+            MazeDirections.LEFT: CellWallLabels.RIGHT,
+            MazeDirections.RIGHT: CellWallLabels.LEFT,
+        }
+
+        for direction in MazeDirections:
+            adjacent_position = current_position.get_adjacent_position(
+                direction)
+            if adjacent_position is None:
+                continue
+            adjacent_cell = self._cells[adjacent_position.i][adjacent_position.j]
+            if adjacent_cell.visited_by_maze_solver or adjacent_cell.wall_exists(wall_map[direction]):
+                continue
+            self._draw_path(current_cell, adjacent_cell)
+            result = self._solve_r(adjacent_position, end_position)
+            if result is True:
+                return True
+            self._draw_path(current_cell, adjacent_cell, undo=True)
+
+        return False
+
     def _draw_cell(self, i: int, j: int) -> None:
         """
         _draw_cell draws the cells in an animated way.
         """
         self._cells[i][j].draw()
+        self._window.redraw()
+        sleep(0.05)
+
+    def _draw_path(self, current_cell: Cell, next_cell: Cell, undo: bool = False) -> None:
+        current_cell.draw_move(next_cell, undo)
         self._window.redraw()
         sleep(0.05)

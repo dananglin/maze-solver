@@ -4,7 +4,7 @@ from graphics import Window, Point, Line
 import errors
 
 
-class CellWallLabel(Enum):
+class CellWallLabels(Enum):
     """
     CellWallLabel is used to label a CellWall
     """
@@ -61,11 +61,11 @@ class Cell:
         left_wall = Line(Point(x1, y1), Point(x1, y2))
         right_wall = Line(Point(x2, y1), Point(x2, y2))
 
-        self._walls: Dict[CellWallLabel, CellWall] = {
-            CellWallLabel.TOP: CellWall(top_wall, window),
-            CellWallLabel.BOTTOM: CellWall(bottom_wall, window),
-            CellWallLabel.LEFT: CellWall(left_wall, window),
-            CellWallLabel.RIGHT: CellWall(right_wall, window),
+        self._walls: Dict[CellWallLabels, CellWall] = {
+            CellWallLabels.TOP: CellWall(top_wall, window),
+            CellWallLabels.BOTTOM: CellWall(bottom_wall, window),
+            CellWallLabels.LEFT: CellWall(left_wall, window),
+            CellWallLabels.RIGHT: CellWall(right_wall, window),
         }
 
         # Calculate the cell's central point
@@ -90,13 +90,13 @@ class Cell:
         configure_walls configures the existence of the Cell's walls.
         """
         if top is not None:
-            self._walls[CellWallLabel.TOP].exists = top
+            self._walls[CellWallLabels.TOP].exists = top
         if bottom is not None:
-            self._walls[CellWallLabel.BOTTOM].exists = bottom
+            self._walls[CellWallLabels.BOTTOM].exists = bottom
         if left is not None:
-            self._walls[CellWallLabel.LEFT].exists = left
+            self._walls[CellWallLabels.LEFT].exists = left
         if right is not None:
-            self._walls[CellWallLabel.RIGHT].exists = right
+            self._walls[CellWallLabels.RIGHT].exists = right
 
     def centre(self) -> Point:
         """
@@ -104,10 +104,14 @@ class Cell:
         """
         return self._centre
 
-    def wall_exists(self, wall: CellWallLabel) -> bool:
+    def wall_exists(self, wall: CellWallLabels) -> bool:
         """
         returns True if a given cell wall exists, or false otherwise.
         """
+        if wall not in CellWallLabels:
+            raise TypeError(
+                "The argument does not appear to be a valid cell wall."
+            )
         return self._walls[wall].exists
 
     def draw(self) -> None:
@@ -117,7 +121,7 @@ class Cell:
         if not self._window:
             return
 
-        for label in CellWallLabel:
+        for label in CellWallLabels:
             self._walls[label].draw()
 
     def draw_move(self, to_cell: 'Cell', undo: bool = False) -> None:
