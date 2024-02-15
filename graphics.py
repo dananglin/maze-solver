@@ -40,7 +40,6 @@ class Window:
     def __init__(self, width: int, height: int) -> None:
         self._root = Tk()
         self._root.title("Maze Solver")
-        self._root.protocol("WM_DELETE_WINDOW", self.close)
 
         # Position the window to the centre of the screen
         screen_width = self._root.winfo_screenwidth()
@@ -61,8 +60,6 @@ class Window:
         )
         self._canvas.pack()
 
-        self._running = False
-
     def redraw(self) -> None:
         """
         redraw redraws all the graphics in the window.
@@ -70,23 +67,15 @@ class Window:
         self._root.update_idletasks()
         self._root.update()
 
-    def wait_for_close(self) -> None:
+    def mainloop(self) -> None:
         """
-        wait_for_close continuously redraws the window until
-        it is set to close.
+        mainloop calls the root widget's mainloop method to
+        ensure that the window remains visible on the screen.
         """
-        self._running = True
-        while self._running:
-            self.redraw()
+        self._root.mainloop()
 
     def draw_line(self, line: Line, fill_colour: str = "black") -> None:
         """
         draw_line draws a line on the canvas.
         """
         line.draw(self._canvas, fill_colour)
-
-    def close(self) -> None:
-        """
-        close sets the window to close.
-        """
-        self._running = False
