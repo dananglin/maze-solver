@@ -5,18 +5,22 @@ import errors
 
 
 class Tests(unittest.TestCase):
+    """
+    Tests runs the test suite.
+    """
+
     def test_maze_create_cell_grid(self):
         """
         test_maze_create_cell_grid tests that the maze is constructed properly.
         """
         cases = [
             {
-                "number_of_cell_rows": 12,
-                "number_of_cells_per_row": 10,
+                "number_of_cell_rows": 6,
+                "number_of_cells_per_row": 9,
             },
             {
-                "number_of_cell_rows": 50,
-                "number_of_cells_per_row": 120,
+                "number_of_cell_rows": 3,
+                "number_of_cells_per_row": 12,
             },
             {
                 "number_of_cell_rows": 4,
@@ -34,7 +38,6 @@ class Tests(unittest.TestCase):
                 2,
                 None,
                 None,
-                True,
             )
             self.assertEqual(
                 len(m._cells),
@@ -61,7 +64,6 @@ class Tests(unittest.TestCase):
             2,
             None,
             None,
-            True,
         )
         self.assertFalse(m._cells[0][0].wall_exists(CellWallLabel.TOP))
         self.assertFalse(

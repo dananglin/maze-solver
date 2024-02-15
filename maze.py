@@ -89,7 +89,6 @@ class Maze:
             cell_size_y: int,
             window: Window = None,
             seed=None,
-            test=False,
     ) -> None:
         self._x_position = x_position
         self._y_position = y_position
@@ -108,8 +107,21 @@ class Maze:
         self._create_cell_grid()
         self._open_entrance_and_exit()
 
-        if not test:
-            self._break_walls_r(0, 0)
+        start_position = MazePosition(
+            i=0,
+            j=0,
+            max_i=self._num_cell_rows-1,
+            max_j=self._num_cells_per_row-1,
+        )
+
+        end_position = MazePosition(
+            i=self._num_cell_rows-1,
+            j=self._num_cells_per_row-1,
+            max_i=self._num_cell_rows-1,
+            max_j=self._num_cells_per_row-1,
+        )
+
+        self._break_walls_r(start_position)
 
     def _create_cell_grid(self) -> None:
         """
@@ -165,19 +177,13 @@ class Maze:
                 j=self._num_cells_per_row-1
             )
 
-    def _break_walls_r(self, i: int, j: int) -> None:
+    def _break_walls_r(self, current_position: MazePosition) -> None:
         """
         _break_walls_r generates a random maze by traversing through the
         cells and randomly knocking down the walls to create the maze's paths.
         """
 
-        current_position = MazePosition(
-            i=i,
-            j=j,
-            max_i=self._num_cell_rows-1,
-            max_j=self._num_cells_per_row-1
-        )
-        current_cell = self._cells[i][j]
+        current_cell = self._cells[current_position.i][current_position.j]
         current_cell.visited_by_maze_generator = True
 
         while True:
@@ -195,7 +201,7 @@ class Maze:
 
             if len(possible_directions) == 0:
                 if self._window:
-                    self._draw_cell(i=i, j=j)
+                    self._draw_cell(i=current_position.i, j=current_position.j)
                 break
 
             chosen_direction = random.choice(possible_directions)
@@ -217,9 +223,9 @@ class Maze:
                 next_cell.configure_walls(left=False)
 
             if self._window:
-                self._draw_cell(i=i, j=j)
+                self._draw_cell(i=current_position.i, j=current_position.j)
 
-            self._break_walls_r(i=next_position.i, j=next_position.j)
+            self._break_walls_r(next_position)
 
     def _draw_cell(self, i: int, j: int) -> None:
         """
