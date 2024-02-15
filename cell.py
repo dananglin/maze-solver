@@ -80,18 +80,22 @@ class Cell:
 
     def configure_walls(
             self,
-            top: bool = True,
-            bottom: bool = True,
-            left: bool = True,
-            right: bool = True,
+            top: bool = None,
+            bottom: bool = None,
+            left: bool = None,
+            right: bool = None,
     ) -> None:
         """
         configure_walls configures the existence of the Cell's walls.
         """
-        self._walls[CellWallLabel.TOP].exists = top
-        self._walls[CellWallLabel.BOTTOM].exists = bottom
-        self._walls[CellWallLabel.LEFT].exists = left
-        self._walls[CellWallLabel.RIGHT].exists = right
+        if top is not None:
+            self._walls[CellWallLabel.TOP].exists = top
+        if bottom is not None:
+            self._walls[CellWallLabel.BOTTOM].exists = bottom
+        if left is not None:
+            self._walls[CellWallLabel.LEFT].exists = left
+        if right is not None:
+            self._walls[CellWallLabel.RIGHT].exists = right
 
     def centre(self) -> Point:
         """

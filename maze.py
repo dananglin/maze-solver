@@ -20,6 +20,7 @@ class Maze:
             cell_size_y: int,
             window: Window = None,
             seed=None,
+            test=False,
     ) -> None:
         self._x_position = x_position
         self._y_position = y_position
@@ -33,13 +34,15 @@ class Maze:
         random.seed(seed)
 
         # Create the Maze's cells
-        self._cells: List[List[Cell]] = [None for i in range(self._num_cell_rows)]
-        self._create_cells()
+        self._cells: List[List[Cell]] = [
+            None for i in range(self._num_cell_rows)]
+        self._create_cell_grid()
         self._open_entrance_and_exit()
-        if self._window:
+
+        if not test:
             self._break_walls_r(0, 0)
 
-    def _create_cells(self) -> None:
+    def _create_cell_grid(self) -> None:
         """
         creates all the cells and draws them.
         """
@@ -65,7 +68,16 @@ class Maze:
             cursor_y += self._cell_size_y
 
         if self._window:
-            self._draw_cells()
+            self._draw_cell_grid()
+
+    def _draw_cell_grid(self) -> None:
+        """
+        draws all the cells on the maze with a short pause between each cell
+        for animation purposes.
+        """
+        for y in range(self._num_cell_rows):
+            for x in range(self._num_cells_per_row):
+                self._draw_cell(y=y, x=x)
 
     def _open_entrance_and_exit(self) -> None:
         """
@@ -74,12 +86,22 @@ class Maze:
         at the bottom right of the maze.
         """
         self._cells[0][0].configure_walls(top=False)
-        self._cells[0][0].draw()
+        self._cells[self._num_cell_rows -
+                    1][self._num_cells_per_row-1].configure_walls(bottom=False)
 
-        self._cells[self._num_cell_rows-1][self._num_cells_per_row-1].configure_walls(bottom=False)
-        self._cells[self._num_cell_rows-1][self._num_cells_per_row-1].draw()
+        if self._window:
+            self._draw_cell(0, 0)
+            self._draw_cell(
+                y=self._num_cell_rows-1,
+                x=self._num_cells_per_row-1
+            )
 
     def _break_walls_r(self, y: int, x: int) -> None:
+        """
+        _break_walls_r generates a random maze by traversing through the
+        cells and randomly knocking down the walls to create the maze's paths.
+        """
+
         current_cell = self._cells[y][x]
         current_cell.visited = True
         above, below, left, right = "above", "below", "left", "right"
@@ -94,7 +116,7 @@ class Maze:
             to_visit: List[str] = []
 
             for k, value in adjacent_cells.items():
-                if (value[0] < 0)or (value[1] < 0) or (value[0] > self._num_cell_rows-1) or (value[1] > self._num_cells_per_row-1):
+                if (value[0] < 0) or (value[1] < 0) or (value[0] > self._num_cell_rows-1) or (value[1] > self._num_cells_per_row-1):
                     continue
                 if self._cells[value[0]][value[1]].visited:
                     continue
@@ -102,11 +124,13 @@ class Maze:
                 to_visit.append(k)
 
             if len(to_visit) == 0:
-                current_cell.draw()
+                if self._window:
+                    self._draw_cell(y=y, x=x)
                 break
 
             next_direction = random.choice(to_visit)
-            next_cell = self._cells[adjacent_cells[next_direction][0]][adjacent_cells[next_direction][1]]
+            next_cell = self._cells[adjacent_cells[next_direction]
+                                    [0]][adjacent_cells[next_direction][1]]
 
             if next_direction is above:
                 current_cell.configure_walls(top=False)
@@ -122,28 +146,18 @@ class Maze:
                 next_cell.configure_walls(left=False)
 
             current_cell.draw()
-            next_cell.draw()
-            self._animate()
+            if self._window:
+                self._draw_cell(y=y, x=x)
 
             self._break_walls_r(
-                adjacent_cells[next_direction][0],
-                adjacent_cells[next_direction][1],
+                y=adjacent_cells[next_direction][0],
+                x=adjacent_cells[next_direction][1],
             )
 
-    def _draw_cells(self) -> None:
+    def _draw_cell(self, y: int, x: int) -> None:
         """
-        draws all the cells on the maze with a short pause between each cell
-        for animation purposes.
+        _draw_cell draws the cells in an animated way.
         """
-        for i in range(self._num_cell_rows):
-            for j in range(self._num_cells_per_row):
-                self._cells[i][j].draw()
-                self._animate()
-
-    def _animate(self) -> None:
-        """
-        redraws the application and pauses for a short period of time to
-        provide an animation effect.
-        """
+        self._cells[y][x].draw()
         self._window.redraw()
         sleep(0.05)

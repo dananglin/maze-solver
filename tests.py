@@ -32,6 +32,9 @@ class Tests(unittest.TestCase):
                 case["number_of_cells_per_row"],
                 2,
                 2,
+                None,
+                None,
+                True,
             )
             self.assertEqual(
                 len(maze._cells),
@@ -56,6 +59,9 @@ class Tests(unittest.TestCase):
             number_of_cells_per_row,
             2,
             2,
+            None,
+            None,
+            True,
         )
         self.assertFalse(maze._cells[0][0].wall_exists(CellWallLabel.TOP))
         self.assertFalse(
