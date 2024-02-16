@@ -15,16 +15,16 @@ class Tests(unittest.TestCase):
         """
         cases = [
             {
-                "number_of_cell_rows": 6,
-                "number_of_cells_per_row": 9,
+                "height": 6,
+                "width": 9,
             },
             {
-                "number_of_cell_rows": 3,
-                "number_of_cells_per_row": 12,
+                "height": 3,
+                "width": 12,
             },
             {
-                "number_of_cell_rows": 4,
-                "number_of_cells_per_row": 4,
+                "height": 4,
+                "width": 4,
             },
         ]
 
@@ -32,20 +32,20 @@ class Tests(unittest.TestCase):
             m = maze.Maze(
                 0,
                 0,
-                case["number_of_cell_rows"],
-                case["number_of_cells_per_row"],
+                case["height"],
+                case["width"],
                 2,
                 2,
                 None,
                 None,
             )
             self.assertEqual(
-                len(m._cells),
-                case["number_of_cell_rows"],
+                len(m._cell_grid),
+                case["height"],
             )
             self.assertEqual(
-                len(m._cells[0]),
-                case["number_of_cells_per_row"],
+                len(m._cell_grid[0]),
+                case["width"],
             )
 
     def test_break_entrance_and_exit(self):
@@ -65,9 +65,9 @@ class Tests(unittest.TestCase):
             None,
             None,
         )
-        self.assertFalse(m._cells[0][0].wall_exists(CellWallLabels.TOP))
+        self.assertFalse(m._cell_grid[0][0].wall_exists(CellWallLabels.TOP))
         self.assertFalse(
-            m._cells[number_of_cell_rows - 1]
+            m._cell_grid[number_of_cell_rows - 1]
             [number_of_cells_per_row - 1].wall_exists(CellWallLabels.BOTTOM)
         )
 
@@ -112,13 +112,13 @@ class Tests(unittest.TestCase):
     def test_maze_position_equality(self):
         cases = [
             {
-                "m1": maze.MazePosition(i=1, j=3, max_i=10, max_j=100),
-                "m2": maze.MazePosition(i=1, j=3, max_i=10, max_j=100),
+                "m1": maze.MazePosition(i=1, j=3, last_i=10, last_j=100),
+                "m2": maze.MazePosition(i=1, j=3, last_i=10, last_j=100),
                 "expected": True,
             },
             {
-                "m1": maze.MazePosition(i=1, j=3, max_i=10, max_j=100),
-                "m2": maze.MazePosition(i=100, j=30, max_i=200, max_j=100),
+                "m1": maze.MazePosition(i=1, j=3, last_i=10, last_j=100),
+                "m2": maze.MazePosition(i=100, j=30, last_i=200, last_j=100),
                 "expected": False,
             }
         ]
@@ -130,43 +130,43 @@ class Tests(unittest.TestCase):
     def test_maze_position_adjacent_positition(self):
         cases = [
             {
-                "position": maze.MazePosition(i=3, j=4, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.ABOVE,
-                "expected": maze.MazePosition(i=2, j=4, max_i=10, max_j=10),
+                "position": maze.MazePosition(i=3, j=4, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.ABOVE,
+                "expected": maze.MazePosition(i=2, j=4, last_i=10, last_j=10),
             },
             {
-                "position": maze.MazePosition(i=9, j=4, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.BELOW,
-                "expected": maze.MazePosition(i=10, j=4, max_i=10, max_j=10),
+                "position": maze.MazePosition(i=9, j=4, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.BELOW,
+                "expected": maze.MazePosition(i=10, j=4, last_i=10, last_j=10),
             },
             {
-                "position": maze.MazePosition(i=1, j=1, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.LEFT,
-                "expected": maze.MazePosition(i=1, j=0, max_i=10, max_j=10),
+                "position": maze.MazePosition(i=1, j=1, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.LEFT,
+                "expected": maze.MazePosition(i=1, j=0, last_i=10, last_j=10),
             },
             {
-                "position": maze.MazePosition(i=3, j=9, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.RIGHT,
-                "expected": maze.MazePosition(i=3, j=10, max_i=10, max_j=10),
+                "position": maze.MazePosition(i=3, j=9, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.RIGHT,
+                "expected": maze.MazePosition(i=3, j=10, last_i=10, last_j=10),
             },
             {
-                "position": maze.MazePosition(i=0, j=4, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.ABOVE,
+                "position": maze.MazePosition(i=0, j=4, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.ABOVE,
                 "expected": None,
             },
             {
-                "position": maze.MazePosition(i=10, j=4, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.BELOW,
+                "position": maze.MazePosition(i=10, j=4, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.BELOW,
                 "expected": None,
             },
             {
-                "position": maze.MazePosition(i=1, j=0, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.LEFT,
+                "position": maze.MazePosition(i=1, j=0, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.LEFT,
                 "expected": None,
             },
             {
-                "position": maze.MazePosition(i=3, j=10, max_i=10, max_j=10),
-                "direction": maze.MazeDirections.RIGHT,
+                "position": maze.MazePosition(i=3, j=10, last_i=10, last_j=10),
+                "direction": maze.MazeDirection.RIGHT,
                 "expected": None,
             },
         ]

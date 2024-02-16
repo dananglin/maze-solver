@@ -1,5 +1,6 @@
 from graphics import Window
 from maze import Maze
+from solver import Solver
 
 
 def main():
@@ -8,15 +9,16 @@ def main():
     game = Maze(
         x_position=10,
         y_position=10,
-        num_cell_rows=30,
-        num_cells_per_row=30,
-        cell_size_x=20,
-        cell_size_y=20,
+        height=16,
+        width=16,
+        cell_height=40,
+        cell_width=40,
         window=window
     )
 
-    solved = game.solve()
-    if solved:
+    solver = Solver(game)
+
+    if solver.solve():
         print("Maze solved successfully :)")
     else:
         print("I'm unable to solve the maze :(")

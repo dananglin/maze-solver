@@ -76,8 +76,10 @@ class Cell:
         # A reference to the root Window class for drawing purposes.
         self._window = window
 
-        self.visited_by_maze_generator = False
-        self.visited_by_maze_solver = False
+        self._visited: Dict[str, bool] = {
+            "generator": False,
+            "solver": False,
+        }
 
     def configure_walls(
             self,
@@ -137,3 +139,21 @@ class Cell:
             fill_colour = "grey"
         line = Line(self.centre(), to_cell.centre())
         self._window.draw_line(line, fill_colour)
+
+    def was_visited_by(self, visitor: str) -> bool:
+        """
+        returns True if the cell was visited by the
+        specified visitor.
+        """
+        if visitor not in ("solver", "generator"):
+            raise ValueError(f"This is an unknown visitor ({visitor})")
+
+        return self._visited[visitor]
+
+    def mark_as_visited_by(self, visitor: str) -> None:
+        """
+        marks the cell as visited by the specified visitor.
+        """
+        if visitor not in ("solver", "generator"):
+            raise ValueError(f"This is an unknown visitor ({visitor})")
+        self._visited[visitor] = True
