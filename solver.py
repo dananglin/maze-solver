@@ -49,6 +49,7 @@ class Solver:
             self,
             current_position: MazePosition,
             end_position: MazePosition,
+            enable_random_direction: bool = False,
     ) -> bool:
         if current_position == end_position:
             return True
@@ -59,54 +60,15 @@ class Solver:
             visitor=self._solver,
         )
 
-        for direction in MazeDirection:
-            adjacent_position = current_position.get_adjacent_position(
-                direction,
-            )
-
-            if adjacent_position is None:
-                continue
-            if self._game.cell_was_visited_by(
-                    i=adjacent_position.i,
-                    j=adjacent_position.j,
-                    visitor=self._solver,
-            ) or self._game.cell_wall_exists(
-                    i=adjacent_position.i,
-                    j=adjacent_position.j,
-                    wall=self._wall_map[direction],
-            ):
-                continue
-
-            self._game.draw_path_between(current_position, adjacent_position)
-            solved = self.solve_with_dfs_r(adjacent_position, end_position)
-            if solved:
-                return True
-            self._game.draw_path_between(
-                current_position, adjacent_position, undo=True)
-
-        return False
-
-    def solve_with_randomised_dfs_r(
-            self,
-            current_position: MazePosition,
-            end_position: MazePosition,
-    ) -> bool:
-        if current_position == end_position:
-            return True
-
-        self._game.mark_cell_as_visited(
-            i=current_position.i,
-            j=current_position.j,
-            visitor=self._solver,
-        )
-
-        random.seed()
+        if enable_random_direction:
+            random.seed()
 
         while True:
             possible_directions: List[MazeDirection] = []
             for direction in MazeDirection:
                 adjacent_position = current_position.get_adjacent_position(
-                    direction)
+                    direction,
+                )
                 if adjacent_position is None:
                     continue
                 if self._game.cell_was_visited_by(
@@ -122,16 +84,16 @@ class Solver:
                 possible_directions.append(direction)
             if len(possible_directions) == 0:
                 break
-            chosen_direction = None
-            if len(possible_directions) == 1:
-                chosen_direction = possible_directions[0]
+            next_direction = None
+            if len(possible_directions) == 1 or not enable_random_direction:
+                next_direction = possible_directions[0]
             else:
-                chosen_direction = random.choice(possible_directions)
+                next_direction = random.choice(possible_directions)
             next_position = current_position.get_adjacent_position(
-                chosen_direction,
+                next_direction,
             )
             self._game.draw_path_between(current_position, next_position)
-            solved = self.solve_with_randomised_dfs_r(
+            solved = self.solve_with_dfs_r(
                 next_position, end_position)
             if solved:
                 return True
@@ -147,7 +109,7 @@ class Solver:
         self,
         current_position: MazePosition,
         end_position: MazePosition,
-        enable_random_direction: False,
+        enable_random_direction: bool = False,
     ) -> bool:
         self._game.mark_cell_as_visited(
             i=current_position.i,
