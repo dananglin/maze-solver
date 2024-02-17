@@ -18,7 +18,7 @@ def main():
 
     solver = Solver(game)
 
-    if solver.solve(solver.solve_with_randomised_dst_r):
+    if solver.solve(solver.solve_with_randomised_dfs_r):
         print("Maze solved successfully :)")
     else:
         print("I'm unable to solve the maze :(")

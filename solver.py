@@ -44,7 +44,7 @@ class Solver:
 
         return solve_method(start_position, end_position)
 
-    def solve_with_dst_r(
+    def solve_with_dfs_r(
             self,
             current_position: MazePosition,
             end_position: MazePosition,
@@ -77,7 +77,7 @@ class Solver:
                 continue
 
             self._game.draw_path_between(current_position, adjacent_position)
-            solved = self.solve_with_dst_r(adjacent_position, end_position)
+            solved = self.solve_with_dfs_r(adjacent_position, end_position)
             if solved:
                 return True
             self._game.draw_path_between(
@@ -85,7 +85,7 @@ class Solver:
 
         return False
 
-    def solve_with_randomised_dst_r(
+    def solve_with_randomised_dfs_r(
             self,
             current_position: MazePosition,
             end_position: MazePosition,
@@ -130,7 +130,7 @@ class Solver:
                 chosen_direction,
             )
             self._game.draw_path_between(current_position, next_position)
-            solved = self.solve_with_randomised_dst_r(
+            solved = self.solve_with_randomised_dfs_r(
                 next_position, end_position)
             if solved:
                 return True
