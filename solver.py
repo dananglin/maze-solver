@@ -21,6 +21,8 @@ class Solver:
             MazeDirection.RIGHT: CellWallLabels.LEFT,
         }
 
+        random.seed()
+
     def solve(
         self,
         solve_method: Callable[[MazePosition, MazePosition, bool], bool],
@@ -60,8 +62,6 @@ class Solver:
             visitor=self._solver,
         )
 
-        if enable_random_direction:
-            random.seed()
 
         while True:
             possible_directions: List[MazeDirection] = []
@@ -116,9 +116,6 @@ class Solver:
             j=current_position.j,
             visitor=self._solver,
         )
-
-        if enable_random_direction:
-            random.seed()
 
         while True:
             possible_directions = []
