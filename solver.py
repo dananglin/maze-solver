@@ -1,4 +1,5 @@
-from typing import Dict
+from typing import Dict, Callable, List
+import random
 from maze import Maze, MazeDirection, MazePosition
 from cell import CellWallLabels
 
@@ -20,7 +21,10 @@ class Solver:
             MazeDirection.RIGHT: CellWallLabels.LEFT,
         }
 
-    def solve(self) -> bool:
+    def solve(
+        self,
+        solve_method: Callable[[MazePosition, MazePosition], bool],
+    ) -> bool:
         """
         solve attempts to solve the generated maze.
         """
@@ -38,9 +42,9 @@ class Solver:
             last_j=self._game.get_last_j(),
         )
 
-        return self._solve_r(start_position, end_position)
+        return solve_method(start_position, end_position)
 
-    def _solve_r(
+    def solve_with_dst_r(
             self,
             current_position: MazePosition,
             end_position: MazePosition,
@@ -73,9 +77,67 @@ class Solver:
                 continue
 
             self._game.draw_path_between(current_position, adjacent_position)
-            result = self._solve_r(adjacent_position, end_position)
-            if result is True:
+            solved = self.solve_with_dst_r(adjacent_position, end_position)
+            if solved:
                 return True
-            self._game.draw_path_between(current_position, adjacent_position, undo=True)
+            self._game.draw_path_between(
+                current_position, adjacent_position, undo=True)
+
+        return False
+
+    def solve_with_randomised_dst_r(
+            self,
+            current_position: MazePosition,
+            end_position: MazePosition,
+    ) -> bool:
+        if current_position == end_position:
+            return True
+
+        self._game.mark_cell_as_visited(
+            i=current_position.i,
+            j=current_position.j,
+            visitor=self._solver,
+        )
+
+        random.seed()
+
+        while True:
+            possible_directions: List[MazeDirection] = []
+            for direction in MazeDirection:
+                adjacent_position = current_position.get_adjacent_position(
+                    direction)
+                if adjacent_position is None:
+                    continue
+                if self._game.cell_was_visited_by(
+                    i=adjacent_position.i,
+                    j=adjacent_position.j,
+                    visitor=self._solver,
+                ) or self._game.cell_wall_exists(
+                    i=adjacent_position.i,
+                    j=adjacent_position.j,
+                    wall=self._wall_map[direction],
+                ):
+                    continue
+                possible_directions.append(direction)
+            if len(possible_directions) == 0:
+                break
+            chosen_direction = None
+            if len(possible_directions) == 1:
+                chosen_direction = possible_directions[0]
+            else:
+                chosen_direction = random.choice(possible_directions)
+            next_position = current_position.get_adjacent_position(
+                chosen_direction,
+            )
+            self._game.draw_path_between(current_position, next_position)
+            solved = self.solve_with_randomised_dst_r(
+                next_position, end_position)
+            if solved:
+                return True
+            self._game.draw_path_between(
+                current_position,
+                next_position,
+                undo=True
+            )
 
         return False

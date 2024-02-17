@@ -9,8 +9,8 @@ def main():
     game = Maze(
         x_position=10,
         y_position=10,
-        height=16,
-        width=16,
+        height=19,
+        width=19,
         cell_height=40,
         cell_width=40,
         window=window
@@ -18,7 +18,7 @@ def main():
 
     solver = Solver(game)
 
-    if solver.solve():
+    if solver.solve(solver.solve_with_randomised_dst_r):
         print("Maze solved successfully :)")
     else:
         print("I'm unable to solve the maze :(")
