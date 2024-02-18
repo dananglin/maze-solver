@@ -1,8 +1,7 @@
 from typing import List
-from time import sleep
 import random
 from enum import Enum
-from graphics import Window
+from graphics import Graphics
 from cell import Cell, CellWallLabels
 
 
@@ -93,7 +92,7 @@ class Maze:
             width: int,
             cell_height: int,
             cell_width: int,
-            window: Window = None,
+            graphics: Graphics = None,
             seed=None,
     ) -> None:
         self._x_position = x_position
@@ -102,28 +101,34 @@ class Maze:
         self._width = width
         self._cell_height = cell_height
         self._cell_width = cell_width
-        self._window = window
+        self._graphics = graphics
         self._generator = "generator"
 
         # initialise the random number generator
         random.seed(seed)
 
         # Create the Maze's cells
-        self._cell_grid: List[List[Cell]] = []
-        self._create_cell_grid()
+        self._cell_grid: List[List[Cell]] = None
 
-        # Open up the maze's entrance and exit.
+    def generate(self):
+        """
+        randomly generates a new maze.
+        """
+
+        if self._cell_grid is None:
+            self._cell_grid: List[List[Cell]] = None
+            self._create_cell_grid()
+        else:
+            self._graphics.clear_all()
+            self._reset_cell_grid()
+        self._draw_cell_grid()
         self._open_entrance_and_exit()
-
-        start_position = MazePosition(
+        self._break_walls_r(MazePosition(
             i=0,
             j=0,
             last_i=self._height-1,
             last_j=self._width-1,
-        )
-
-        # Generate the maze.
-        self._break_walls_r(start_position)
+        ))
 
     def get_last_i(self) -> int:
         "returns the last position of the Maze's outer list."
@@ -152,7 +157,6 @@ class Maze:
                     cursor_y,
                     (cursor_x + self._cell_width),
                     (cursor_y + self._cell_height),
-                    self._window
                 )
                 cells[j] = cell
                 if j == self._width - 1:
@@ -161,9 +165,6 @@ class Maze:
                     cursor_x += self._cell_width
             self._cell_grid[i] = cells
             cursor_y += self._cell_height
-
-        if self._window:
-            self._draw_cell_grid()
 
     def _draw_cell_grid(self) -> None:
         """
@@ -186,7 +187,7 @@ class Maze:
         self._cell_grid[self._height-1][self._width -
                                         1].configure_walls(bottom=False)
 
-        if self._window:
+        if self._graphics:
             self._draw_cell(0, 0)
             self._draw_cell(
                 i=self._height-1,
@@ -222,12 +223,13 @@ class Maze:
                 possible_directions.append(direction)
 
             if len(possible_directions) == 0:
-                if self._window:
+                if self._graphics:
                     self._draw_cell(i=current_position.i, j=current_position.j)
                 break
 
             chosen_direction = random.choice(possible_directions)
-            next_position = current_position.get_adjacent_position(chosen_direction)
+            next_position = current_position.get_adjacent_position(
+                chosen_direction)
 
             if chosen_direction is MazeDirection.ABOVE:
                 self._configure_cell_walls(
@@ -274,7 +276,7 @@ class Maze:
                     left=False,
                 )
 
-            if self._window:
+            if self._graphics:
                 self._draw_cell(i=current_position.i, j=current_position.j)
 
             self._break_walls_r(next_position)
@@ -284,18 +286,15 @@ class Maze:
         draws the cells in an animated way.
         """
 
-        self._cell_grid[i][j].draw()
-        self._window.redraw()
-        sleep(0.05)
+        self._graphics.draw_cell_walls(self._cell_grid[i][j].get_walls())
 
     def _draw_path(self, current_cell: Cell, next_cell: Cell, undo: bool = False) -> None:
         """
         draws a path between two cells in an animated way.
         """
 
-        current_cell.draw_move(next_cell, undo)
-        self._window.redraw()
-        sleep(0.05)
+        self._graphics.draw_path(
+            current_cell.centre(), next_cell.centre(), undo)
 
     def mark_cell_as_visited(self, i: int, j: int, visitor: str) -> None:
         """
@@ -348,3 +347,14 @@ class Maze:
             left=left,
             right=right,
         )
+
+    def _reset_cell_grid(self) -> None:
+        for i in range(self._height):
+            for j in range(self._width):
+                self._cell_grid[i][j].reset()
+
+    def reset_solution(self, visitor: str) -> None:
+        self._graphics.clear_paths()
+        for i in range(self._height):
+            for j in range(self._width):
+                self._cell_grid[i][j].unmark_visited(visitor)

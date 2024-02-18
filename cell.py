@@ -1,6 +1,6 @@
 from typing import Dict
 from enum import Enum
-from graphics import Window, Point, Line
+from line import Point, Line
 import errors
 
 
@@ -21,17 +21,48 @@ class CellWall:
     a Cell's wall.
     """
 
-    def __init__(self, line: Line, window: Window) -> None:
-        self.exists = True
-        self.line = line
-        self._window = window
+    def __init__(self, line: Line) -> None:
+        self._exists = True
+        self._line = line
+        self._line_colour = "black"
 
-    def draw(self):
-        fill_colour = self._window.cell_grid_colour
-        if not self.exists:
-            fill_colour = self._window.background_colour
+    def configure(self, build: bool) -> None:
+        """
+        builds or destroys the cell wall.
+        """
+        if build:
+            self._build_wall()
+        else:
+            self._destroy_wall()
 
-        self._window.draw_line(self.line, fill_colour=fill_colour)
+    def _build_wall(self) -> None:
+        """
+        builds the cell wall
+        """
+        self._exists = True
+        self._line_colour = "black"
+
+    def _destroy_wall(self) -> None:
+        """
+        destroys the cell wall
+        """
+        self._exists = False
+        self._line_colour = "white"
+
+    def wall_up(self) -> bool:
+        """
+        returns true if the cell wall is up.
+        """
+        return self._exists
+
+    def get_line(self) -> Line:
+        return self._line
+
+    def get_line_colour(self) -> str:
+        """
+        returns the line colour of the wall.
+        """
+        return self._line_colour
 
 
 class Cell:
@@ -43,7 +74,6 @@ class Cell:
             self,
             x1: int, y1: int,
             x2: int, y2: int,
-            window: Window = None,
     ) -> None:
         # Validation
         if (x2 < x1) or (y2 < y1):
@@ -62,19 +92,16 @@ class Cell:
         right_wall = Line(Point(x2, y1), Point(x2, y2))
 
         self._walls: Dict[CellWallLabels, CellWall] = {
-            CellWallLabels.TOP: CellWall(top_wall, window),
-            CellWallLabels.BOTTOM: CellWall(bottom_wall, window),
-            CellWallLabels.LEFT: CellWall(left_wall, window),
-            CellWallLabels.RIGHT: CellWall(right_wall, window),
+            CellWallLabels.TOP: CellWall(top_wall),
+            CellWallLabels.BOTTOM: CellWall(bottom_wall),
+            CellWallLabels.LEFT: CellWall(left_wall),
+            CellWallLabels.RIGHT: CellWall(right_wall),
         }
 
         # Calculate the cell's central point
         centre_x = x1 + ((x2 - x1) / 2)
         centre_y = y1 + ((y2 - y1) / 2)
         self._centre = Point(centre_x, centre_y)
-
-        # A reference to the root Window class for drawing purposes.
-        self._window = window
 
         self._visited: Dict[str, bool] = {
             "generator": False,
@@ -92,13 +119,13 @@ class Cell:
         configure_walls configures the existence of the Cell's walls.
         """
         if top is not None:
-            self._walls[CellWallLabels.TOP].exists = top
+            self._walls[CellWallLabels.TOP].configure(top)
         if bottom is not None:
-            self._walls[CellWallLabels.BOTTOM].exists = bottom
+            self._walls[CellWallLabels.BOTTOM].configure(bottom)
         if left is not None:
-            self._walls[CellWallLabels.LEFT].exists = left
+            self._walls[CellWallLabels.LEFT].configure(left)
         if right is not None:
-            self._walls[CellWallLabels.RIGHT].exists = right
+            self._walls[CellWallLabels.RIGHT].configure(right)
 
     def centre(self) -> Point:
         """
@@ -114,31 +141,7 @@ class Cell:
             raise TypeError(
                 "The argument does not appear to be a valid cell wall."
             )
-        return self._walls[wall].exists
-
-    def draw(self) -> None:
-        """
-        draw draws the cell onto the canvas
-        """
-        if not self._window:
-            return
-
-        for label in CellWallLabels:
-            self._walls[label].draw()
-
-    def draw_move(self, to_cell: 'Cell', undo: bool = False) -> None:
-        """
-        draw_move draws a path between the centre of this cell and
-        the centre of the given cell.
-        """
-        if not self._window:
-            return
-
-        fill_colour = "red"
-        if undo:
-            fill_colour = "grey"
-        line = Line(self.centre(), to_cell.centre())
-        self._window.draw_line(line, fill_colour)
+        return self._walls[wall].wall_up()
 
     def was_visited_by(self, visitor: str) -> bool:
         """
@@ -157,3 +160,18 @@ class Cell:
         if visitor not in ("solver", "generator"):
             raise ValueError(f"This is an unknown visitor ({visitor})")
         self._visited[visitor] = True
+
+    def unmark_visited(self, visitor: str) -> None:
+        """
+        unmarks the cell as visited by the specified visitor.
+        """
+        self._visited[visitor] = False
+
+    def reset(self) -> None:
+        for label in CellWallLabels:
+            self._walls[label].configure(True)
+        for k in self._visited:
+            self._visited[k] = False
+
+    def get_walls(self) -> Dict[CellWallLabels, CellWall]:
+        return self._walls

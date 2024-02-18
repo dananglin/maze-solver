@@ -1,81 +1,89 @@
-from tkinter import Tk, BOTH, Canvas
+from typing import Dict, Tuple
+from time import sleep
+from tkinter import Canvas
+from line import Line, Point
+from cell import CellWallLabels, CellWall
 
 
-class Point:
-    """
-    Point represents the position of a point.
-    """
-
-    def __init__(self, x: int, y: int):
-        self.x = x
-        self.y = y
-
-
-class Line:
-    """
-    Line represents a graphical line.
-    """
-
-    def __init__(self, point_a: Point, point_b: Point) -> None:
-        self.point_a = point_a
-        self.point_b = point_b
-
-    def draw(self, canvas: Canvas, fill_colour: str) -> None:
-        """
-        draw draws a line on a given canvas.
-        """
-        canvas.create_line(
-            self.point_a.x, self.point_a.y,
-            self.point_b.x, self.point_b.y,
-            fill=fill_colour, width=2
-        )
-        canvas.pack(fill=BOTH, expand=1)
-
-
-class Window:
-    """
-    Window is a Graphical window.
-    """
-
-    def __init__(self, width: int, height: int) -> None:
-        self._root = Tk()
-        self._root.title("Maze Solver")
-
-        # Position the window to the centre of the screen
-        screen_width = self._root.winfo_screenwidth()
-        screen_height = self._root.winfo_screenheight()
-        centre_x = int(screen_width/2 - width/2)
-        centre_y = int(screen_height/2 - height/2)
-        self._root.geometry(f"{width}x{height}+{centre_x}+{centre_y}")
-
-        # Styling
-        self.background_colour = "white"
-        self.cell_grid_colour = "black"
-
-        self._canvas = Canvas(self._root)
-        self._canvas.config(
-            bg=self.background_colour,
-            height=height,
+class Graphics(Canvas):
+    def __init__(self, container, background="white", width=800, height=800) -> None:
+        super().__init__(container)
+        self.config(
+            bg=background,
             width=width,
+            height=height,
         )
-        self._canvas.pack()
+        self._path_tag = "path"
+        self._cell_wall_tag = "cell_wall"
 
-    def redraw(self) -> None:
+    def _redraw(self) -> None:
         """
         redraw redraws all the graphics in the window.
         """
-        self._root.update_idletasks()
-        self._root.update()
+        self.update_idletasks()
+        self.update()
+        sleep(0.05)
 
-    def mainloop(self) -> None:
+    def _draw_line(
+            self,
+            line: Line,
+            tags: Tuple[str],
+            fill_colour: str = "black",
+            width: int = 2,
+    ) -> None:
         """
-        mainloop calls the root widget's mainloop method to
-        ensure that the window remains visible on the screen.
+        draws a line onto the canvas.
         """
-        self._root.mainloop()
+        self.create_line(
+            line.point_a.x, line.point_a.y,
+            line.point_b.x, line.point_b.y,
+            fill=fill_colour,
+            width=width,
+            tags=tags,
+        )
 
-    def draw_line(self, line: Line, fill_colour: str = "black") -> None:
+    def draw_cell_walls(self, walls: Dict[CellWallLabels, CellWall]) -> None:
         """
-        draw_line draws a line on the canvas.
+        draws the walls of a cell onto the canvas.
         """
-        line.draw(self._canvas, fill_colour)
+        for label in CellWallLabels:
+            self._draw_line(
+                line=walls[label].get_line(),
+                fill_colour=walls[label].get_line_colour(),
+                tags=(self._cell_wall_tag),
+            )
+        self._redraw()
+
+    def draw_path(
+            self,
+            from_cell_centre: Point,
+            to_cell_centre: Point,
+            undo: bool = False
+    ) -> None:
+        """
+        draws a path between the centre of this cell and
+        the centre of the given cell.
+        """
+        line = Line(from_cell_centre, to_cell_centre)
+        fill_colour = "red"
+        if undo:
+            fill_colour = "grey"
+        self._draw_line(
+            line=line,
+            fill_colour=fill_colour,
+            tags=(self._path_tag),
+        )
+        self._redraw()
+
+    def clear_all(self) -> None:
+        """
+        clears the canvas
+        """
+        self.delete("all")
+
+    def clear_paths(self) -> None:
+        """
+        deletes all the lines that have the
+        path tag.
+        """
+        self.delete(self._path_tag)

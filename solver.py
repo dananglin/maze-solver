@@ -23,6 +23,9 @@ class Solver:
 
         random.seed()
 
+    def _reset(self):
+        self._game.reset_solution(self._solver)
+
     def solve(
         self,
         solve_method: Callable[[MazePosition, MazePosition, bool], bool],
@@ -45,7 +48,19 @@ class Solver:
             last_j=self._game.get_last_j(),
         )
 
-        return solve_method(start_position, end_position, enable_random_direction)
+        # Clear the maze if there was a previous run
+        if self._game.cell_was_visited_by(
+            i=start_position.i,
+            j=start_position.j,
+            visitor=self._solver,
+        ):
+            self._game.reset_solution(self._solver)
+
+        return solve_method(
+            start_position,
+            end_position,
+            enable_random_direction,
+        )
 
     def solve_with_dfs_r(
             self,
@@ -61,7 +76,6 @@ class Solver:
             j=current_position.j,
             visitor=self._solver,
         )
-
 
         while True:
             possible_directions: List[MazeDirection] = []

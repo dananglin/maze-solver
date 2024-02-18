@@ -65,6 +65,7 @@ class Tests(unittest.TestCase):
             None,
             None,
         )
+        m.generate()
         self.assertFalse(m._cell_grid[0][0].wall_exists(CellWallLabels.TOP))
         self.assertFalse(
             m._cell_grid[number_of_cell_rows - 1]

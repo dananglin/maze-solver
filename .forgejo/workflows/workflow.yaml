@@ -17,6 +17,6 @@ jobs:
     - name: Install Python 3
       uses: https://github.com/actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.12.2'
     - name: Test Code
       run: python tests.py
