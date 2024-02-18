@@ -121,7 +121,10 @@ class Maze:
         else:
             self._graphics.clear_all()
             self._reset_cell_grid()
-        self._draw_cell_grid()
+
+        if self._graphics:
+            self._draw_cell_grid()
+
         self._open_entrance_and_exit()
         self._break_walls_r(MazePosition(
             i=0,

@@ -39,6 +39,7 @@ class Tests(unittest.TestCase):
                 None,
                 None,
             )
+            m.generate()
             self.assertEqual(
                 len(m._cell_grid),
                 case["height"],
