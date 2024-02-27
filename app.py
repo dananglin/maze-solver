@@ -45,8 +45,8 @@ class App(Tk):
         self.solver = Solver(self.maze)
 
         self.search_algorithms = {
-            "Breadth-First Search": self.solver.solve_with_dfs_r,
-            "Depth-First Search": self.solver.solve_with_bfs_r,
+            "Breadth-First Search": self.solver.solve_with_bfs_r,
+            "Depth-First Search": self.solver.solve_with_dfs_r,
         }
 
         self.side_panel = self._create_side_panel()
