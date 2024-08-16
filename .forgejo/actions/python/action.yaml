@@ -1,0 +1,5 @@
+name: "Run Python Tests"
+description: "Runs the Python Tests"
+runs:
+  using: "docker"
+  image: "Dockerfile"
