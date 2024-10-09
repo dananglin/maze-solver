@@ -11,8 +11,8 @@ With this application you can randomly generate mazes and watch as different alg
 
 ### Repository mirrors
 
-- **GitHub:** https://github.com/dananglin/maze-solver
 - **Code Flow:** https://codeflow.dananglin.me.uk/apollo/maze-solver
+- **GitHub:** https://github.com/dananglin/maze-solver
 
 ## Requirements
 
